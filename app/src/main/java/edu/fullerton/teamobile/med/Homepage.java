@@ -21,6 +21,7 @@ public class Homepage extends AppCompatActivity {
 
         initButtons();
 
+
     }
 
     //initialize buttons to be clickable

@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.android.permission.SET_ALARM" />
 
     <application
         android:allowBackup="true"
@@ -23,6 +24,8 @@
         <activity android:name=".Login" />
         <activity android:name=".Homepage" />
         <activity android:name=".AddMedPage" />
+
+        <receiver android:name=".AlarmReceiver" />
     </application>
 
 </manifest>

@@ -20,6 +20,9 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+
+//TO DO: Save log in state, create log out button!
+
 public class Login extends AppCompatActivity {
 
     Button btnLogin;
@@ -108,6 +111,8 @@ public class Login extends AppCompatActivity {
 
                             //successfully logged in
                             Intent i = new Intent(getApplicationContext(), Homepage.class);
+                            //save state username
+
                             i.putExtra("username", rtnUsername);
                             startActivity(i);
 
