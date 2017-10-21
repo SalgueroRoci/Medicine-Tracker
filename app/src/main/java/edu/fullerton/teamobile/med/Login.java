@@ -2,7 +2,9 @@ package edu.fullerton.teamobile.med;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -21,10 +23,9 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 
-//TO DO: Save log in state, create log out button!
-
 public class Login extends AppCompatActivity {
 
+    SharedPreferences sharedPref; //saving log in state
     Button btnLogin;
     EditText txtUser, txtPassword;
     private ProgressDialog pDialog;
@@ -37,6 +38,18 @@ public class Login extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
+        //used for savning log in state
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+
+        //alreadyy logged in
+        boolean loggedIn = sharedPref.getBoolean("loggedIn", false);
+        if (loggedIn == true) {
+            //go to main activity
+            Intent home = new Intent(Login.this, Homepage.class);
+            startActivity(home);
+            finish();
+        }
+        //else
         login();
     }
 
@@ -109,10 +122,16 @@ public class Login extends AppCompatActivity {
                         if(status == 1) {
                             toastMessage("Successfully Logged in.");
 
+                            //!!!!Save log in state on local phone!**/
+                            //credit: https://stackoverflow.com/questions/26740185/android-login-registration-with-shared-preferences
+                            SharedPreferences.Editor editor = sharedPref.edit();
+                            editor.putBoolean("loggedIn", true);
+                            editor.putString("username", rtnUsername);
+                            editor.apply();
+
                             //successfully logged in
                             Intent i = new Intent(getApplicationContext(), Homepage.class);
                             //save state username
-
                             i.putExtra("username", rtnUsername);
                             startActivity(i);
 

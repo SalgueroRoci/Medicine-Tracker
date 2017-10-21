@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Medicine Tracker</string>
+    <string name="titleScreen">Online Mobile App that helps track of your medication/prescription!</string>
 </resources>

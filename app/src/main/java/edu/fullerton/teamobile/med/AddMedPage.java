@@ -4,6 +4,7 @@ import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -35,10 +36,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-//to do : add to server and check it works!
-//make sure alarm goes off correctly.
-
+//fix retrieving username
 public class AddMedPage extends AppCompatActivity {
+
+    SharedPreferences sharedPref;
 
     //Add medication button
     Button addMedbtn, addAlarm;
@@ -49,7 +50,6 @@ public class AddMedPage extends AppCompatActivity {
     private TimePicker time;
     private EditText medName, medPerBot, medDose;
     private CheckBox sun, mon, tue, wed, thurs, fri, sat;
-    private TextView test;
 
     private String medicine, perbot, dose, username, text, h , m, message;
     int [] days, intID;
@@ -65,15 +65,25 @@ public class AddMedPage extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_med_page);
 
-        test = (TextView) findViewById(R.id.txtTest);
         alarms = 0;
         maxAlarms = 10;
         days = new int[7];
         intID = new int[100];
         list = new ArrayList<String>();
 
-        Intent mainPage = getIntent();
-        username = mainPage.getStringExtra("username");
+        //check to see if logged in
+        boolean loggedIn = sharedPref.getBoolean("loggedIn", false);
+        if (loggedIn == false) {
+            //go to main activity
+            Intent home = new Intent(AddMedPage.this, MainActivity.class);
+            toastMessage("Need to log in!");
+            startActivity(home);
+            finish();
+        }
+        else {
+            //save username
+            username = sharedPref.getString("username", "0");
+        }
 
         addMedicationBtn();
     }//end on create
@@ -122,7 +132,7 @@ public class AddMedPage extends AppCompatActivity {
                     adapter.notifyDataSetChanged();
                     setListViewHeightBasedOnChildren(alarmsList);
                 }
-                else if (alarms > 10){
+                else if (alarms > maxAlarms){
                     toastMessage("Too many alarms!");
                 }
                 else {
@@ -176,16 +186,12 @@ public class AddMedPage extends AppCompatActivity {
                 if ( medicine.length() != 0 && perbot.length() != 0 && dose.length() != 0 && numdays != 0 && alarms != 0) {
                     new CreateNewMedication().execute();
 
-                    //return to main menu
-                    //finish();
-
                 } else {
                     toastMessage("You must fill out form!");
                 }
 
             }
         });
-
 
     } //end of add medication
 
@@ -248,8 +254,32 @@ public class AddMedPage extends AppCompatActivity {
             try{
                 // CALL send info to send information to website
                 sendInfo();
-                //create alarms
-                createAlarms();
+
+                // Show response on activity then exit on success
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if(status == 1) {
+                            //create alarms
+                            createAlarms();
+                            toastMessage("Successfully added Medicine!");
+
+                            //successfully logged in
+                            Intent i = new Intent(getApplicationContext(), Homepage.class);
+                            startActivity(i);
+
+                            finish();
+                        }
+                        else if(status == 0) {
+                            //failed exit and redo
+                            //display error
+                            toastMessage(message);
+                        }
+
+                    }
+                });
+
+
             }
             catch(final Exception ex)
             {
@@ -303,14 +333,7 @@ public class AddMedPage extends AppCompatActivity {
         info.put("schedule", schedule);
         //used to receive messages from server
 
-        text = info.toString();
-        //TO DELETE LATER !
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                test.setText(text);
-            }
-        });
+        text = "";
         BufferedReader reader = null;
 
         // Send data
@@ -394,17 +417,21 @@ public class AddMedPage extends AppCompatActivity {
                 calendar.set(calendar.SECOND, 0);
                 calendar.set(calendar.MILLISECOND, 0);
 
-                //unique ID
+                //Save info to intents
                 Intent intent = new Intent(AddMedPage.this, AlarmReceiver.class);
                 //pass the intent id and save
                 intent.putExtra("intentID", String.valueOf(intID[k]) );
-                intent.putExtra("username", "hello worls");
+                intent.putExtra("username", username);
                 intent.putExtra("medName", medicine);
                 PendingIntent appIntent = PendingIntent.getBroadcast(AddMedPage.this, intID[k], intent,PendingIntent.FLAG_ONE_SHOT);
                 AlarmManager ALARM1 = (AlarmManager)getSystemService(ALARM_SERVICE);
 
-                //repeat weekly
-                ALARM1.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY*7, appIntent);
+                //if the time is in the past day, set it in the future so it doesn't go off immediately
+               long start = calendar.getTimeInMillis();
+               if (calendar.before(calendar.getInstance()) )  {
+                   start += AlarmManager.INTERVAL_DAY * 7;
+               }
+                ALARM1.setRepeating(AlarmManager.RTC_WAKEUP, start , AlarmManager.INTERVAL_DAY*7, appIntent);
 
                Log.e("Alarm Made", "Day " + days[i] + " Time " + list.get(j));
 

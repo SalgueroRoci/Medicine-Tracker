@@ -18,9 +18,14 @@ import static android.content.Context.ALARM_SERVICE;
  * Created by Rocio on 9/19/2017.
  */
 
+//fix second action bar in the future
+// icons!!!!
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
+
+
+        //intent id 0 = snooze Button. id = 2 for actual snooze alarm. id = 1 go to homepage button
 
         String medName = intent.getStringExtra("medName");
         String intentID = intent.getStringExtra("intentID");
@@ -79,7 +84,7 @@ public class AlarmReceiver extends BroadcastReceiver {
             //Snooze created for 5 minutes
             Calendar alarmCalendar = Calendar.getInstance();
 
-            long currenttime = alarmCalendar.getTimeInMillis() + 300000;
+            long currenttime = alarmCalendar.getTimeInMillis() + 300000; //5 minutes
             AlarmManager am = (AlarmManager) context.getSystemService((ALARM_SERVICE) );
             am.set(AlarmManager.RTC_WAKEUP, currenttime, snooze);
         }
