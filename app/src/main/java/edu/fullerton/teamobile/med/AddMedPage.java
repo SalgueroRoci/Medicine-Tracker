@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -30,11 +31,14 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+
+import javax.net.ssl.HttpsURLConnection;
 
 //fix retrieving username
 public class AddMedPage extends AppCompatActivity {
@@ -71,7 +75,8 @@ public class AddMedPage extends AppCompatActivity {
         intID = new int[100];
         list = new ArrayList<String>();
 
-        //check to see if logged in
+        //check if logged in already
+        sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean loggedIn = sharedPref.getBoolean("loggedIn", false);
         if (loggedIn == false) {
             //go to main activity
@@ -343,7 +348,7 @@ public class AddMedPage extends AppCompatActivity {
             URL url = new URL("https://medicinetracker.000webhostapp.com/androidphp/addMed.php");
 
             // Send POST data request
-            URLConnection conn = url.openConnection();
+            HttpsURLConnection conn = (HttpsURLConnection ) url.openConnection();
             conn.setDoOutput(true);
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             //write the information to php file

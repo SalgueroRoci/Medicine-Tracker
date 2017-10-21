@@ -20,6 +20,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 
+import javax.net.ssl.HttpsURLConnection;
+
 /**
  * Created by Rocio on 10/13/2017.
  */
@@ -213,7 +215,7 @@ public class Register extends AppCompatActivity {
             URL url = new URL("https://medicinetracker.000webhostapp.com/androidphp/add_new_user.php");
 
             // Send POST data request
-            URLConnection conn = url.openConnection();
+            HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
             conn.setDoOutput(true);
             OutputStreamWriter wr = new OutputStreamWriter(conn.getOutputStream());
             //write the information to php file
