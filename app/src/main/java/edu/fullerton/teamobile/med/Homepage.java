@@ -67,8 +67,8 @@ public class Homepage extends AppCompatActivity {
         allBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Intent intentMain = new Intent(Homepage.this, MedsTodayPage.class);
-                //startActivity(intentMain);
+                Intent intentMain = new Intent(Homepage.this, MedList.class);
+                startActivity(intentMain);
             }
         });
 

@@ -26,6 +26,8 @@
         <activity android:name=".AddMedPage" />
 
         <receiver android:name=".AlarmReceiver" />
+
+        <activity android:name=".MedList"></activity>
     </application>
 
 </manifest>
