@@ -19,7 +19,6 @@ import static android.content.Context.ALARM_SERVICE;
  */
 
 //fix second action bar in the future
-// icons!!!!
 public class AlarmReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -46,8 +45,8 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setContentTitle("Time to take medication!")
                 .setContentText(medName)
                 .setTicker("Test ticker")
-                .addAction(R.mipmap.ic_launcher_round, "Snooze", btnSnooze)
-                //.addAction(R.mipmap.ic_launcher_round, "Check", snooze)
+                .addAction(R.drawable.ic_notifications_paused, "Snooze", btnSnooze)
+                //.addAction(R.drawable.ic_notifications_off, "Check", snooze)
                 .setSmallIcon(R.mipmap.ic_launcher_round);
 
         //what sound going off
