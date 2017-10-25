@@ -3,6 +3,7 @@ package edu.fullerton.teamobile.med;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
@@ -23,6 +24,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -30,22 +32,26 @@ import javax.net.ssl.HttpsURLConnection;
 public class MedList extends AppCompatActivity {
 
     SharedPreferences sharedPref; //saving log in state
-    TextView test;
+    TextView title;
     ListView medList;
     String text, username, message;
     int status;
 
-    private ProgressDialog pDialog;
-    private ArrayAdapter<String> adapter;
-    private List<String> names;
+    ProgressDialog pDialog;
+    ArrayAdapter<String> adapter;
+    List<String> names;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_med_list);
 
-        test = (TextView) findViewById(R.id.txtTestt);
-        medList = (ListView) findViewById(R.id.lstMedList);
+        title = (TextView) findViewById(R.id.txtTestt);
+        medList = (ListView) findViewById(R.id.lstMeds);
+
+        names = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, names);
+        medList.setAdapter(adapter);
 
         //check if logged in already
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -62,16 +68,7 @@ public class MedList extends AppCompatActivity {
             username = sharedPref.getString("username", "0");
         }
 
-
         new GetMeds().execute();
-
-        medList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                toastMessage(medList.getItemAtPosition(position).toString());
-            }
-        });
-
     }
 
     /**
@@ -105,15 +102,6 @@ public class MedList extends AppCompatActivity {
             try{
                 // send login information
                 getMeds(args);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        test.setText(text);
-                        adapter = new ArrayAdapter<String>(MedList.this, android.R.layout.simple_gallery_item, names);
-                        medList.setAdapter(adapter);
-                    }
-                });
-
 
             }
             catch(final Exception ex)
@@ -135,6 +123,15 @@ public class MedList extends AppCompatActivity {
         protected void onPostExecute(String file_url) {
             // dismiss the dialog once done
             pDialog.dismiss();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    adapter.notifyDataSetChanged();
+                    medList.setBackgroundColor(Color.RED);
+                }
+            });
+
         }
 
     }//end of create user thread
@@ -189,10 +186,11 @@ public class MedList extends AppCompatActivity {
 
             status = Integer.parseInt(json_data.getString("success"));
             message = json_data.getString("message");
-            for(int i=0; i < json_array.length(); i++) {
-                extract = json_array.getJSONObject(i);
-                //text += extract.getString("medname");
-                //names.add(extract.getString("medname"));
+            if(status == 1) {
+                for (int i = 0; i < json_array.length(); i++) {
+                    extract = json_array.getJSONObject(i);
+                    names.add(extract.getString("MedName"));
+                }
             }
 
         }

@@ -132,7 +132,13 @@ public class AddMedPage extends AppCompatActivity {
                 if(alarms  < maxAlarms && h.length() != 0 && m.length() != 0 && h.length() <= 2 && m.length() <= 2) {
                     alarms++; //update amount of alarms
                     //add to list
-                    list.add(h+":"+m);
+                    if(Integer.parseInt(m) < 10) {
+                        list.add(h+":0"+m);
+                    }
+                    else{
+                        list.add(h+":"+m);
+                    }
+
                     // this method will refresh your listview manually
                     adapter.notifyDataSetChanged();
                     setListViewHeightBasedOnChildren(alarmsList);
