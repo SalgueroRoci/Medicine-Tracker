@@ -14,7 +14,7 @@ import android.widget.Toast;
 public class Homepage extends AppCompatActivity {
 
     SharedPreferences sharedPref;
-    public Button addBtn, allBtn ,outBtn;
+    public Button addBtn, allBtn ,tdyBtn,outBtn;
     String username;
 
     @Override
@@ -54,6 +54,7 @@ public class Homepage extends AppCompatActivity {
         addBtn = (Button) findViewById(R.id.btnAddMed);
         allBtn = (Button) findViewById(R.id.btnAllMeds);
         outBtn = (Button) findViewById(R.id.btnLogOut);
+        tdyBtn = (Button) findViewById(R.id.btnToday);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,6 +69,16 @@ public class Homepage extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intentMain = new Intent(Homepage.this, MedList.class);
+                intentMain.putExtra("today", false);
+                startActivity(intentMain);
+            }
+        });
+
+        tdyBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intentMain = new Intent(Homepage.this, MedList.class);
+                intentMain.putExtra("today", true);
                 startActivity(intentMain);
             }
         });

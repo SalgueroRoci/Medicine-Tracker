@@ -27,7 +27,8 @@
 
         <receiver android:name=".AlarmReceiver" />
 
-        <activity android:name=".MedList"></activity>
+        <activity android:name=".MedList" />
+        <activity android:name=".MedInfo"></activity>
     </application>
 
 </manifest>
