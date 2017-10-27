@@ -30,7 +30,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
-//to do make todays php
+
 public class MedList extends AppCompatActivity {
 
     SharedPreferences sharedPref; //saving log in state
@@ -76,6 +76,14 @@ public class MedList extends AppCompatActivity {
 
         new GetMeds().execute();
 
+    }
+
+    @Override
+    public void onRestart(){
+        super.onRestart();
+        //when another activity finish then clear list and re-get info
+        names.clear();
+        new GetMeds().execute();
     }
 
     /**
@@ -134,6 +142,7 @@ public class MedList extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    //change color to medications soon going off in an hour
                     adapter = new ArrayAdapter<String>
                             (MedList.this, android.R.layout.simple_list_item_1, names){
                         @Override
@@ -159,7 +168,6 @@ public class MedList extends AppCompatActivity {
                         @Override
                         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                             String name = String.valueOf(medList.getItemAtPosition(position));
-                            toastMessage(name);
                             Intent info = new Intent(MedList.this, MedInfo.class);
                             info.putExtra("medname", name);
                             startActivity(info);
