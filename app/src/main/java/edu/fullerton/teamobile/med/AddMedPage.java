@@ -40,7 +40,6 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-//fix retrieving username
 public class AddMedPage extends AppCompatActivity {
 
     SharedPreferences sharedPref;
@@ -55,7 +54,7 @@ public class AddMedPage extends AppCompatActivity {
     private EditText medName, medPerBot, medDose;
     private CheckBox sun, mon, tue, wed, thurs, fri, sat;
 
-    private String medicine, perbot, dose, username, text, h , m, message;
+    private String medicine, oldMedName, perbot, dose, username, text, h , m, message;
     int [] days, intID;
     int numdays, alarms, maxAlarms, status;
     List<String> list;
@@ -63,6 +62,7 @@ public class AddMedPage extends AppCompatActivity {
     ProgressDialog pDialog;
 
     private Calendar calendar;
+    private boolean edit;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +74,7 @@ public class AddMedPage extends AppCompatActivity {
         days = new int[7];
         intID = new int[100];
         list = new ArrayList<String>();
+
 
         //check if logged in already
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
@@ -121,6 +122,25 @@ public class AddMedPage extends AppCompatActivity {
 
         adapter = new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1, list);
         alarmsList.setAdapter(adapter);
+
+//EDIT option-----------------------
+        Intent editIntent = getIntent();
+        edit = editIntent.getBooleanExtra("edit", false); //defaults to false if not set
+        //TODO: edit fill, delete alarms
+        if(edit) {
+            toastMessage("edit test");
+            //get info oldName, perbot, dose, list , notifydatasetchanged
+            //oldeName = editIntent.getStringExtra("medname", "");
+
+            //fill out forms
+            //medName.setText("Testjjj");
+            //medPerBot.setText();
+            //medDose.setText();
+            //mark the days selected, for loop add alarms to list, and add intentID to an array
+
+            //delAlarms(intentIDs);
+        }
+//---------------------------------
 
         //add alarm values to list
         addAlarm.setOnClickListener(new View.OnClickListener() {
@@ -251,9 +271,19 @@ public class AddMedPage extends AppCompatActivity {
                             createAlarms();
                             toastMessage("Successfully added Medicine!");
 
-                            //successfully logged in
-                            Intent i = new Intent(getApplicationContext(), Homepage.class);
-                            startActivity(i);
+                            //change if it was an edit go to med page
+                            if(edit) {
+                                //successfully logged in
+                                Intent i = new Intent(getApplicationContext(), MedInfo.class);
+                                i.putExtra("medname", medicine);
+                                startActivity(i);
+                            }
+                            else {
+                                //successfully logged in
+                                Intent i = new Intent(getApplicationContext(), Homepage.class);
+                                startActivity(i);
+                            }
+
 
                             finish();
                         }
@@ -300,6 +330,7 @@ public class AddMedPage extends AppCompatActivity {
         info.put("dosage", dose);
         info.put("medname", medicine);
         info.put("username", username);
+        info.put("oldname", oldMedName);
 
         //array of schedules
         JSONArray schedule = new JSONArray();
@@ -326,8 +357,15 @@ public class AddMedPage extends AppCompatActivity {
         // Send data
         try
         {
+            URL url;
             // Defined URL  where to send data
-            URL url = new URL("https://medicinetracker.000webhostapp.com/androidphp/addMed.php");
+            //if its an edit go to update med
+            if(!edit) {
+                url = new URL("https://medicinetracker.000webhostapp.com/androidphp/addMed.php");
+            }
+            else {
+                url = new URL("https://medicinetracker.000webhostapp.com/androidphp/updateMed.php");
+            }
 
             // Send POST data request
             HttpsURLConnection conn = (HttpsURLConnection ) url.openConnection();
@@ -410,7 +448,7 @@ public class AddMedPage extends AppCompatActivity {
                 intent.putExtra("intentID", String.valueOf(intID[k]) );
                 intent.putExtra("username", username);
                 intent.putExtra("medName", medicine);
-                PendingIntent appIntent = PendingIntent.getBroadcast(AddMedPage.this, intID[k], intent,PendingIntent.FLAG_ONE_SHOT);
+                PendingIntent appIntent = PendingIntent.getBroadcast(AddMedPage.this, intID[k], intent,PendingIntent.FLAG_UPDATE_CURRENT);
                 AlarmManager ALARM1 = (AlarmManager)getSystemService(ALARM_SERVICE);
 
                 //if the time is in the past day, set it in the future so it doesn't go off immediately

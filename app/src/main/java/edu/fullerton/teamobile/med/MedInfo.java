@@ -1,5 +1,7 @@
 package edu.fullerton.teamobile.med;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -25,23 +27,29 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import javax.net.ssl.HttpsURLConnection;
 
-//TODO: marked places to do here
-//TODO: make edit php later on
 public class MedInfo extends AppCompatActivity {
     SharedPreferences sharedPref;
     TextView title;
     Button btnEdit, btnDel;
     ProgressDialog pDialog;
 
-    String medname, username, text, message;
-    int status;
+    //TODO: add the parse values to these variables:
+//TODO: medname , alarms, intentID, days, dose, amtleft, totalPills, overdose24, onetimeOver, warnings, ingredients, warnings, medInfo
 
+    //text is to store all JSON response from server, message is to display 'error' or success message
+    //status 1 for success, 0 for error in server
+    String medname, username, text, message, medInfo, ingredients, warnings;
+    int status, dose, amtleft, totalPills, overdose24, onetimeOver;
+    List<String> alarms; //alarms will be a string of hh:mm ex. 2:30 or 12:05
+    List<Integer> intentID, days; //days will have int 0-6 0 = sunday
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +74,11 @@ public class MedInfo extends AppCompatActivity {
         //Get med Name
         Intent get = getIntent();
         medname = get.getStringExtra("medname");
+
+        //make arrays
+        alarms = new ArrayList<String>();
+        days = new ArrayList<Integer>();
+        intentID = new ArrayList<Integer>();
 
         //bind all to a layout
         title = (TextView) findViewById(R.id.txtName);
@@ -93,7 +106,11 @@ public class MedInfo extends AppCompatActivity {
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: add edit button function
+                //TODO: add edit button function add extras
+                Intent edit = new Intent(MedInfo.this, AddMedPage.class);
+                edit.putExtra("edit", true);
+                startActivity(edit);
+                finish();
             }
         });
 
@@ -274,15 +291,23 @@ public class MedInfo extends AppCompatActivity {
             // dismiss the dialog once done
             pDialog.dismiss();
 
+            //delete alarms
+            for(int i = 0; i < intentID.size(); i++ ) {
+                //delete alarms
+                AlarmManager ALARM1 = (AlarmManager)getSystemService(ALARM_SERVICE);
+                Intent intent = new Intent(MedInfo.this, AlarmReceiver.class);
+                PendingIntent appIntent = PendingIntent.getBroadcast(MedInfo.this, intentID.get(i), intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                ALARM1.cancel(appIntent);
+            }
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //TODO: Delete alarms!
-                    //TODO: what to do after finished deleted display message
-                    //TODO: change to finish()
-                    title.setText(text);
+                    toastMessage("Medication Deleted. " + message);
                 }
             });
+
+            finish();
 
         }
 
@@ -334,8 +359,10 @@ public class MedInfo extends AppCompatActivity {
 
             text = sb.toString();
 
-            //TODO: parse string to key value pairs.
-
+            //parse string to key value pairs.
+            JSONObject json_data= new JSONObject(text);
+            status = Integer.parseInt(json_data.getString("success"));
+            message = json_data.getString("message");
 
         }
         catch(Exception ex)
