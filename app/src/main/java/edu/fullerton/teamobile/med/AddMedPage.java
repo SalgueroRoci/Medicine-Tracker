@@ -128,17 +128,7 @@ public class AddMedPage extends AppCompatActivity {
         edit = editIntent.getBooleanExtra("edit", false); //defaults to false if not set
         //TODO: edit fill, delete alarms
         if(edit) {
-            toastMessage("edit test");
-            //get info oldName, perbot, dose, list , notifydatasetchanged
-            //oldeName = editIntent.getStringExtra("medname", "");
-
-            //fill out forms
-            //medName.setText("Testjjj");
-            //medPerBot.setText();
-            //medDose.setText();
-            //mark the days selected, for loop add alarms to list, and add intentID to an array
-
-            //delAlarms(intentIDs);
+            editOption(editIntent);
         }
 //---------------------------------
 
@@ -226,7 +216,56 @@ public class AddMedPage extends AppCompatActivity {
 
     } //end of add medication
 
+    private void editOption(Intent ed) {
+        toastMessage("Edit Medication.");
+        //get info oldName, perbot, dose, list , notifydatasetchanged
+        oldMedName = ed.getStringExtra("medname");
 
+        //fill out forms
+        medName.setText(ed.getStringExtra("medname"));
+        medPerBot.setText(String.valueOf(ed.getIntExtra("totalPills", 0)) );
+        medDose.setText(String.valueOf(ed.getIntExtra("dose", 0)) );
+
+        //add alarms
+        ArrayList<String> temp = ed.getStringArrayListExtra("alarms");
+        for(int i = 0; i < temp.size(); i++) {
+            list.add(temp.get(i));
+            // this method will refresh your listview manually
+            adapter.notifyDataSetChanged();
+            setListViewHeightBasedOnChildren(alarmsList);
+        }
+
+        //add days in a list
+        ArrayList<Integer> dayList = ed.getIntegerArrayListExtra("days");
+        for(int j = 0; j < dayList.size(); j++)
+        {
+            int d = dayList.get(j);
+            if (d == 0)
+                sun.setChecked(true);
+            else if (d == 1)
+                mon.setChecked(true);
+            else if (d == 2)
+                tue.setChecked(true);
+            else if (d == 3)
+                wed.setChecked(true);
+            else if (d == 4)
+                thurs.setChecked(true);
+            else if (d == 5)
+                fri.setChecked(true);
+            else if (d == 6)
+                sat.setChecked(true);
+        }
+        //add intentID in a list
+        ArrayList<Integer> intID = ed.getIntegerArrayListExtra("intentID");
+        //delete alarms
+        for(int i = 0; i < intID.size(); i++ ) {
+            //delete alarms
+            AlarmManager ALARM1 = (AlarmManager)getSystemService(ALARM_SERVICE);
+            Intent intent = new Intent(AddMedPage.this, AlarmReceiver.class);
+            PendingIntent appIntent = PendingIntent.getBroadcast(AddMedPage.this, intID.get(i), intent,PendingIntent.FLAG_UPDATE_CURRENT);
+            ALARM1.cancel(appIntent);
+        }
+    }
 
 
     /***************************************************************************************

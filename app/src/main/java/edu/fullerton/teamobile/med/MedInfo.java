@@ -37,19 +37,19 @@ import javax.net.ssl.HttpsURLConnection;
 
 public class MedInfo extends AppCompatActivity {
     SharedPreferences sharedPref;
-    TextView title;
+    TextView t_medInfo;
     Button btnEdit, btnDel;
     ProgressDialog pDialog;
 
-    //TODO: add the parse values to these variables:
-//TODO: medname , alarms, intentID, days, dose, amtleft, totalPills, overdose24, onetimeOver, warnings, ingredients, warnings, medInfo
+    //add the parse values to these variables: medname , alarms, intentID, days, dose, amtleft,
+    // totalPills, overdose24, onetimeOver, warnings, ingredients, warnings, medInfo
 
     //text is to store all JSON response from server, message is to display 'error' or success message
     //status 1 for success, 0 for error in server
-    String medname, username, text, message, medInfo, ingredients, warnings;
+    String medname, username, text, message, medInfo, ingredients, warnings, official_name;
     int status, dose, amtleft, totalPills, overdose24, onetimeOver;
-    List<String> alarms; //alarms will be a string of hh:mm ex. 2:30 or 12:05
-    List<Integer> intentID, days; //days will have int 0-6 0 = sunday
+    ArrayList<String> alarms; //alarms will be a string of hh:mm ex. 2:30 or 12:05
+    ArrayList<Integer> intentID, days; //days will have int 0-6 0 = sunday
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +81,7 @@ public class MedInfo extends AppCompatActivity {
         intentID = new ArrayList<Integer>();
 
         //bind all to a layout
-        title = (TextView) findViewById(R.id.txtName);
+        t_medInfo = (TextView) findViewById(R.id.txt_medInfo);
         btnEdit = (Button) findViewById(R.id.btnEditMed);
         btnDel = (Button) findViewById(R.id.btnDelMed);
 
@@ -106,9 +106,15 @@ public class MedInfo extends AppCompatActivity {
         btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: add edit button function add extras
+                //add edit button function add extras
                 Intent edit = new Intent(MedInfo.this, AddMedPage.class);
                 edit.putExtra("edit", true);
+                edit.putExtra("medname", medname);
+                edit.putExtra("totalPills", totalPills);
+                edit.putExtra("dose", dose);
+                edit.putIntegerArrayListExtra("intentID", intentID);
+                edit.putIntegerArrayListExtra("days", days);
+                edit.putStringArrayListExtra("alarms", alarms);
                 startActivity(edit);
                 finish();
             }
@@ -172,8 +178,44 @@ public class MedInfo extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //TODO: ADD Info to UI page somehow
-                    title.setText(text); //this is showing all json code unparsed
+                    //ADD Info to UI page
+                    String message = "Medicine: " + medname + "\nTotal Pills: " + totalPills +
+                            "\nPills Remaining: " + amtleft + "\nDosage: " + dose +
+                            "\nMedicines Official Name: " + official_name +
+                            "\nUses: " + medInfo + "\nWarnings: " +
+                            warnings + "\nIngredients: " + ingredients +
+                            "\n24 Hour Overdose: " + overdose24 + "mg\nOne Take Overdose: " + onetimeOver + "mg";
+
+                    String txt_schedule = "";
+                    String txt_day;
+                    for(int j = 0; j < days.size(); j++)//day is holding int... convert to actual days of the week
+                    {
+                        int temp = days.get(j);
+                        if (temp == 0)
+                            txt_day = "Sunday";
+                        else if (temp == 1)
+                            txt_day = "Monday";
+                        else if (temp == 2)
+                            txt_day = "Tuesday";
+                        else if (temp == 3)
+                            txt_day = "Wednesday";
+                        else if (temp == 4)
+                            txt_day = "Thursday";
+                        else if (temp == 5)
+                            txt_day = "Friday";
+                        else if (temp == 6)
+                            txt_day = "Saturday";
+                        else
+                            txt_day = "";
+
+                        txt_schedule = txt_schedule + "Day: " + txt_day;
+                        for(int k = 0; k < alarms.size(); k++)
+                        {
+                            txt_schedule = txt_schedule + " Time: " + alarms.get(k);
+                        }
+                        txt_schedule = txt_schedule + "\n";
+                    }
+                    t_medInfo.setText(message + "\nSchedule:\n" + txt_schedule);
                 }
             });
 
@@ -227,7 +269,29 @@ public class MedInfo extends AppCompatActivity {
 
             text = sb.toString();
 
-            //TODO: parse string to key value pairs.
+            //parse the string from server
+            JSONObject med_data= new JSONObject(text);
+            medname = med_data.getString("medname");
+            totalPills = med_data.getInt("perbottle");
+            amtleft = med_data.getInt("amtleft");
+            dose = med_data.getInt("dose");
+            official_name = med_data.getString("officialName");
+            medInfo = med_data.getString("uses");
+            warnings = med_data.getString("warnings");
+            ingredients = med_data.getString("ingredients");
+            overdose24 = med_data.getInt("24hOverdose");
+            onetimeOver = med_data.getInt("oneOverdose");
+
+            //JSONArray schedule = new JSONArray(med_data.getString("schedule"));
+            JSONArray schedule = med_data.getJSONArray("schedule");
+            //List<String> list = new ArrayList<String>();
+            for(int i =0; i < schedule.length(); i++)
+            {
+                JSONObject jsonobject = schedule.getJSONObject(i);
+                alarms.add(jsonobject.getString("hour") + ":" + jsonobject.getString("min")); //hour + min
+                intentID.add(jsonobject.getInt("intentID")); //its own list
+                days.add(jsonobject.getInt("day")); //its own list
+            }
 
 
         }
@@ -303,7 +367,7 @@ public class MedInfo extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    toastMessage("Medication Deleted. " + message);
+                    toastMessage("Medication Deleted: " + medname);
                 }
             });
 

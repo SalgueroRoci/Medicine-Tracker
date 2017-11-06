@@ -28,11 +28,11 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/txtName"
+                android:id="@+id/txt_medInfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="TextView"
-                android:textAlignment="center"
+                android:textAlignment="textStart"
                 android:textAppearance="@style/TextAppearance.AppCompat.Large"
                 android:textStyle="bold" />
 
