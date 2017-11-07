@@ -200,7 +200,7 @@ public class AddMedPage extends AppCompatActivity {
 
                 //get intIDs
                 for (i =0; i < list.size()*numdays ; i++) {
-                    intID[i] = (int) System.currentTimeMillis() + i;
+                    intID[i] = (int) ((System.currentTimeMillis() % (Integer.MAX_VALUE - i) )  + i);
                 }
 
                 //check if filled out. If form filled add to database, create alarm
@@ -226,14 +226,18 @@ public class AddMedPage extends AppCompatActivity {
         medPerBot.setText(String.valueOf(ed.getIntExtra("totalPills", 0)) );
         medDose.setText(String.valueOf(ed.getIntExtra("dose", 0)) );
 
+        int almCount = ed.getIntExtra("almCount", 0);
         //add alarms
         ArrayList<String> temp = ed.getStringArrayListExtra("alarms");
-        for(int i = 0; i < temp.size(); i++) {
-            list.add(temp.get(i));
+        for(int i = 0; i < almCount; i++) {
             // this method will refresh your listview manually
+            list.add(temp.get(i));
             adapter.notifyDataSetChanged();
             setListViewHeightBasedOnChildren(alarmsList);
         }
+
+        //update alarm amounts
+        alarms = list.size();
 
         //add days in a list
         ArrayList<Integer> dayList = ed.getIntegerArrayListExtra("days");
@@ -255,11 +259,14 @@ public class AddMedPage extends AppCompatActivity {
             else if (d == 6)
                 sat.setChecked(true);
         }
+
         //add intentID in a list
         ArrayList<Integer> intID = ed.getIntegerArrayListExtra("intentID");
+
         //delete alarms
         for(int i = 0; i < intID.size(); i++ ) {
             //delete alarms
+            Log.e("Delete Alarms", "Intent ID " + intID.get(i));
             AlarmManager ALARM1 = (AlarmManager)getSystemService(ALARM_SERVICE);
             Intent intent = new Intent(AddMedPage.this, AlarmReceiver.class);
             PendingIntent appIntent = PendingIntent.getBroadcast(AddMedPage.this, intID.get(i), intent,PendingIntent.FLAG_UPDATE_CURRENT);
@@ -370,6 +377,7 @@ public class AddMedPage extends AppCompatActivity {
         info.put("medname", medicine);
         info.put("username", username);
         info.put("oldname", oldMedName);
+        info.put("alarms", alarms);
 
         //array of schedules
         JSONArray schedule = new JSONArray();
@@ -497,7 +505,7 @@ public class AddMedPage extends AppCompatActivity {
                }
                 ALARM1.setRepeating(AlarmManager.RTC_WAKEUP, start , AlarmManager.INTERVAL_DAY*7, appIntent);
 
-               Log.e("Alarm Made", "Day " + days[i] + " Time " + list.get(j));
+               Log.e("Alarm Made", "Day " + days[i] + " Time " + list.get(j) + " IntentID" + intID[i]);
 
                k++;
             }

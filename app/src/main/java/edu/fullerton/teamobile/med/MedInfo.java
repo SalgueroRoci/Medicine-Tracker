@@ -47,7 +47,8 @@ public class MedInfo extends AppCompatActivity {
     //text is to store all JSON response from server, message is to display 'error' or success message
     //status 1 for success, 0 for error in server
     String medname, username, text, message, medInfo, ingredients, warnings, official_name;
-    int status, dose, amtleft, totalPills, overdose24, onetimeOver;
+    String displayMain;
+    int status, dose, amtleft, totalPills, overdose24, onetimeOver, almCount;
     ArrayList<String> alarms; //alarms will be a string of hh:mm ex. 2:30 or 12:05
     ArrayList<Integer> intentID, days; //days will have int 0-6 0 = sunday
 
@@ -87,7 +88,7 @@ public class MedInfo extends AppCompatActivity {
 
         //get medicine information and wait till finished
         try {
-            new GetMed().execute().get(1000, TimeUnit.MILLISECONDS);
+            new GetMed().execute().get(5000, TimeUnit.MILLISECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
@@ -115,6 +116,7 @@ public class MedInfo extends AppCompatActivity {
                 edit.putIntegerArrayListExtra("intentID", intentID);
                 edit.putIntegerArrayListExtra("days", days);
                 edit.putStringArrayListExtra("alarms", alarms);
+                edit.putExtra("almCount", almCount);
                 startActivity(edit);
                 finish();
             }
@@ -154,6 +156,44 @@ public class MedInfo extends AppCompatActivity {
                 // send login information
                 getMeds(args);
 
+                //parse the string from server
+                JSONObject med_data= new JSONObject(text);
+
+                int success = med_data.getInt("success");
+                final String message = med_data.getString("message");
+                //on success parse everything
+                if(success == 1) {
+                    medname = med_data.getString("medname");
+                    totalPills = med_data.getInt("perbottle");
+                    amtleft = med_data.getInt("amtleft");
+                    dose = med_data.getInt("dose");
+                    official_name = med_data.getString("officialName");
+                    medInfo = med_data.getString("uses");
+                    warnings = med_data.getString("warnings");
+                    ingredients = med_data.getString("ingredients");
+                    overdose24 = med_data.getInt("24hOverdose");
+                    onetimeOver = med_data.getInt("oneOverdose");
+                    almCount = med_data.getInt("alarmCount");
+
+                    //JSONArray schedule = new JSONArray(med_data.getString("schedule"));
+                    JSONArray schedule = med_data.getJSONArray("schedule");
+                    //List<String> list = new ArrayList<String>();
+                    for (int i = 0; i < schedule.length(); i++) {
+                        JSONObject jsonobject = schedule.getJSONObject(i);
+                        alarms.add(jsonobject.getString("hour") + ":" + jsonobject.getString("min")); //hour + min
+                        intentID.add(jsonobject.getInt("intentID")); //its own list
+                        days.add(jsonobject.getInt("day")); //its own list
+                    }
+                }
+                else {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toastMessage(message);
+                        }
+                    });
+                }
+
             }
             catch(final Exception ex)
             {
@@ -175,51 +215,61 @@ public class MedInfo extends AppCompatActivity {
             // dismiss the dialog once done
             pDialog.dismiss();
 
+            //display on page
+            //ADD Info for UI page after ASync completed
+            displayMain = "Medicine: " + medname + "\nTotal Pills: " + totalPills +
+                    "\nPills Remaining: " + amtleft + "\nDosage: " + dose +
+                    "mg\nMedicines Official Name: " + official_name +
+                    "\nUses: " + medInfo + "\n\nWarnings: " +
+                    warnings + "\n\nIngredients: " + ingredients +
+                    "\n\n24 Hour Overdose: " + overdose24 + "mg\nOne Take Overdose: " + onetimeOver + "mg\n";
+
+            String displaySched = "";
+            String txt_day;
+            int lastday  = -1;
+            for(int j = 0; j < days.size(); j++)//day is holding int... convert to actual days of the week
+            {
+                int temp = days.get(j);
+
+                if(lastday == temp) continue; //skip
+
+                if (temp == 0)
+                    txt_day = "Sunday";
+                else if (temp == 1)
+                    txt_day = "Monday";
+                else if (temp == 2)
+                    txt_day = "Tuesday";
+                else if (temp == 3)
+                    txt_day = "Wednesday";
+                else if (temp == 4)
+                    txt_day = "Thursday";
+                else if (temp == 5)
+                    txt_day = "Friday";
+                else if (temp == 6)
+                    txt_day = "Saturday";
+                else
+                    txt_day = "";
+
+                displaySched = displaySched + "Day: " + txt_day + " Time: ";
+                for(int k = 0; k < almCount; k++)
+                {
+                    displaySched = displaySched + alarms.get(k);
+                    if(k != almCount-1) displaySched = displaySched + " ,";
+                }
+                displaySched = displaySched + "\n";
+                lastday = temp;
+            }
+
+            displayMain = displayMain + "\n" + displaySched;
+
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    //ADD Info to UI page
-                    String message = "Medicine: " + medname + "\nTotal Pills: " + totalPills +
-                            "\nPills Remaining: " + amtleft + "\nDosage: " + dose +
-                            "\nMedicines Official Name: " + official_name +
-                            "\nUses: " + medInfo + "\nWarnings: " +
-                            warnings + "\nIngredients: " + ingredients +
-                            "\n24 Hour Overdose: " + overdose24 + "mg\nOne Take Overdose: " + onetimeOver + "mg";
-
-                    String txt_schedule = "";
-                    String txt_day;
-                    for(int j = 0; j < days.size(); j++)//day is holding int... convert to actual days of the week
-                    {
-                        int temp = days.get(j);
-                        if (temp == 0)
-                            txt_day = "Sunday";
-                        else if (temp == 1)
-                            txt_day = "Monday";
-                        else if (temp == 2)
-                            txt_day = "Tuesday";
-                        else if (temp == 3)
-                            txt_day = "Wednesday";
-                        else if (temp == 4)
-                            txt_day = "Thursday";
-                        else if (temp == 5)
-                            txt_day = "Friday";
-                        else if (temp == 6)
-                            txt_day = "Saturday";
-                        else
-                            txt_day = "";
-
-                        txt_schedule = txt_schedule + "Day: " + txt_day;
-                        for(int k = 0; k < alarms.size(); k++)
-                        {
-                            txt_schedule = txt_schedule + " Time: " + alarms.get(k);
-                        }
-                        txt_schedule = txt_schedule + "\n";
-                    }
-                    t_medInfo.setText(message + "\nSchedule:\n" + txt_schedule);
+                    t_medInfo.setText(displayMain);
                 }
             });
 
-        }
+        }//end of do in background
 
     }//end of create user thread
 
@@ -268,30 +318,6 @@ public class MedInfo extends AppCompatActivity {
             }
 
             text = sb.toString();
-
-            //parse the string from server
-            JSONObject med_data= new JSONObject(text);
-            medname = med_data.getString("medname");
-            totalPills = med_data.getInt("perbottle");
-            amtleft = med_data.getInt("amtleft");
-            dose = med_data.getInt("dose");
-            official_name = med_data.getString("officialName");
-            medInfo = med_data.getString("uses");
-            warnings = med_data.getString("warnings");
-            ingredients = med_data.getString("ingredients");
-            overdose24 = med_data.getInt("24hOverdose");
-            onetimeOver = med_data.getInt("oneOverdose");
-
-            //JSONArray schedule = new JSONArray(med_data.getString("schedule"));
-            JSONArray schedule = med_data.getJSONArray("schedule");
-            //List<String> list = new ArrayList<String>();
-            for(int i =0; i < schedule.length(); i++)
-            {
-                JSONObject jsonobject = schedule.getJSONObject(i);
-                alarms.add(jsonobject.getString("hour") + ":" + jsonobject.getString("min")); //hour + min
-                intentID.add(jsonobject.getInt("intentID")); //its own list
-                days.add(jsonobject.getInt("day")); //its own list
-            }
 
 
         }
