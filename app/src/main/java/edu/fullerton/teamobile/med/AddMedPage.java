@@ -58,6 +58,7 @@ public class AddMedPage extends AppCompatActivity {
     int [] days, intID;
     int numdays, alarms, maxAlarms, status;
     List<String> list;
+    ArrayList<Integer> oldIntents;
 
     ProgressDialog pDialog;
 
@@ -74,6 +75,7 @@ public class AddMedPage extends AppCompatActivity {
         days = new int[7];
         intID = new int[100];
         list = new ArrayList<String>();
+        oldIntents = new ArrayList<Integer>();
 
 
         //check if logged in already
@@ -124,9 +126,11 @@ public class AddMedPage extends AppCompatActivity {
         alarmsList.setAdapter(adapter);
 
 //EDIT option-----------------------
+        //if edit button pressed then fills form and uses updateMed.php
+        // deletes old alarms if 'add medication' is clicked
         Intent editIntent = getIntent();
         edit = editIntent.getBooleanExtra("edit", false); //defaults to false if not set
-        //TODO: edit fill, delete alarms
+
         if(edit) {
             editOption(editIntent);
         }
@@ -182,6 +186,19 @@ public class AddMedPage extends AppCompatActivity {
         addMedbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                if(edit) {
+                    //delete old alarms, new ones will be made in createnewmed class
+                    for(int i = 0; i < oldIntents.size(); i++ ) {
+                        //delete alarms
+                        Log.e("Delete Alarms", "Intent ID " + oldIntents.get(i));
+                        AlarmManager ALARM1 = (AlarmManager)getSystemService(ALARM_SERVICE);
+                        Intent intent = new Intent(AddMedPage.this, AlarmReceiver.class);
+                        PendingIntent appIntent = PendingIntent.getBroadcast(AddMedPage.this, oldIntents.get(i), intent,PendingIntent.FLAG_UPDATE_CURRENT);
+                        ALARM1.cancel(appIntent);
+                    }
+                }
+
                 //get the information of the form page
                 medicine = medName.getText().toString();
                 perbot = medPerBot.getText().toString();
@@ -217,6 +234,8 @@ public class AddMedPage extends AppCompatActivity {
     } //end of add medication
 
     private void editOption(Intent ed) {
+        String edittext = "Update Medication";
+        addMedbtn.setText(edittext);
         toastMessage("Edit Medication.");
         //get info oldName, perbot, dose, list , notifydatasetchanged
         oldMedName = ed.getStringExtra("medname");
@@ -260,18 +279,9 @@ public class AddMedPage extends AppCompatActivity {
                 sat.setChecked(true);
         }
 
-        //add intentID in a list
-        ArrayList<Integer> intID = ed.getIntegerArrayListExtra("intentID");
+        //add old intents in a list
+        oldIntents = ed.getIntegerArrayListExtra("intentID");
 
-        //delete alarms
-        for(int i = 0; i < intID.size(); i++ ) {
-            //delete alarms
-            Log.e("Delete Alarms", "Intent ID " + intID.get(i));
-            AlarmManager ALARM1 = (AlarmManager)getSystemService(ALARM_SERVICE);
-            Intent intent = new Intent(AddMedPage.this, AlarmReceiver.class);
-            PendingIntent appIntent = PendingIntent.getBroadcast(AddMedPage.this, intID.get(i), intent,PendingIntent.FLAG_UPDATE_CURRENT);
-            ALARM1.cancel(appIntent);
-        }
     }
 
 
@@ -503,7 +513,7 @@ public class AddMedPage extends AppCompatActivity {
                if (calendar.before(calendar.getInstance()) )  {
                    start += AlarmManager.INTERVAL_DAY * 7;
                }
-                ALARM1.setRepeating(AlarmManager.RTC_WAKEUP, start , AlarmManager.INTERVAL_DAY*7, appIntent);
+                ALARM1.setInexactRepeating(AlarmManager.RTC_WAKEUP, start , AlarmManager.INTERVAL_DAY*7, appIntent);
 
                Log.e("Alarm Made", "Day " + days[i] + " Time " + list.get(j) + " IntentID" + intID[i]);
 

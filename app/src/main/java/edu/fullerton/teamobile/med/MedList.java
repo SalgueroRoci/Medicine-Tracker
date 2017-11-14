@@ -41,7 +41,7 @@ public class MedList extends AppCompatActivity {
     boolean today;
 
     ProgressDialog pDialog;
-    ArrayAdapter<String> adapter;
+    MyAdapter adapter;
     List<String> names, stage;
 
     @Override
@@ -143,25 +143,7 @@ public class MedList extends AppCompatActivity {
                 @Override
                 public void run() {
                     //change color to medications soon going off in an hour
-                    adapter = new ArrayAdapter<String>
-                            (MedList.this, android.R.layout.simple_list_item_1, names){
-                        @Override
-                        public View getView(int position, View convertView, ViewGroup parent){
-                            // Get the current item from ListView
-                            View view = super.getView(position,convertView,parent);
-                            if(stage.get(position) == "false")
-                            {
-                            // Set a background color for ListView regular row/item
-                                view.setBackgroundColor(Color.parseColor("#00000000"));
-                            }
-                            else
-                            {
-                            // Set the background color for alternate row/item
-                                view.setBackgroundColor(Color.parseColor("#b5433f"));
-                            }
-                            return view;
-                        }
-                    };
+                    adapter = new MyAdapter(MedList.this, names,  stage);
 
                     medList.setAdapter(adapter);
                     medList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
