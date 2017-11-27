@@ -8,13 +8,14 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+import android.net.Uri;
 
 
 //add log out button
 public class Homepage extends AppCompatActivity {
 
     SharedPreferences sharedPref;
-    public Button addBtn, allBtn ,tdyBtn,outBtn;
+    public Button addBtn, allBtn ,tdyBtn,outBtn, reportBtn;
     String username;
 
     @Override
@@ -55,6 +56,7 @@ public class Homepage extends AppCompatActivity {
         allBtn = (Button) findViewById(R.id.btnAllMeds);
         outBtn = (Button) findViewById(R.id.btnLogOut);
         tdyBtn = (Button) findViewById(R.id.btnToday);
+        reportBtn = (Button) findViewById(R.id.btnReport);
 
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -93,6 +95,17 @@ public class Homepage extends AppCompatActivity {
                 editor.commit();
                 Intent i = new Intent(Homepage.this,MainActivity.class);
                 startActivity(i);
+            }
+        });
+
+        reportBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent();
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.addCategory(Intent.CATEGORY_BROWSABLE);
+                intent.setData(Uri.parse("https://medicinetracker.000webhostapp.com/index.php"));
+                startActivity(intent);
             }
         });
     }
