@@ -71,7 +71,7 @@ public class AddMedPage extends AppCompatActivity {
         setContentView(R.layout.activity_add_med_page);
 
         alarms = 0;
-        maxAlarms = 10;
+        maxAlarms = 5;
         days = new int[7];
         intID = new int[100];
         list = new ArrayList<String>();
@@ -81,7 +81,7 @@ public class AddMedPage extends AppCompatActivity {
         //check if logged in already
         sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         boolean loggedIn = sharedPref.getBoolean("loggedIn", false);
-        if (loggedIn == false) {
+        if (!loggedIn) {
             //go to main activity
             Intent home = new Intent(AddMedPage.this, MainActivity.class);
             toastMessage("Need to log in!");
