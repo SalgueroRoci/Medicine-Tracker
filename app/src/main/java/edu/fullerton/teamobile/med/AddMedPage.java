@@ -513,7 +513,7 @@ public class AddMedPage extends AppCompatActivity {
                if (calendar.before(calendar.getInstance()) )  {
                    start += AlarmManager.INTERVAL_DAY * 7;
                }
-                ALARM1.setInexactRepeating(AlarmManager.RTC_WAKEUP, start , AlarmManager.INTERVAL_DAY*7, appIntent);
+                ALARM1.setRepeating(AlarmManager.RTC_WAKEUP, start , AlarmManager.INTERVAL_DAY*7, appIntent);
 
                Log.e("Alarm Made", "Day " + days[i] + " Time " + list.get(j) + " IntentID" + intID[i]);
 
