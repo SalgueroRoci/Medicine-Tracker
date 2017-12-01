@@ -74,7 +74,7 @@ public class AlarmReceiver extends BroadcastReceiver {
                 .setTicker("Test ticker")
                 .addAction(R.drawable.ic_notifications_paused, "Snooze", btnSnooze)
                 .addAction(R.drawable.ic_notifications_off, "Took Medication", btnTookMed)
-                .setSmallIcon(R.mipmap.ic_launcher_round);
+                .setSmallIcon(R.mipmap.ic_launcher);
 
         //what sound going off
         //notif.setDefaults(NotificationCompat.DEFAULT_SOUND);
