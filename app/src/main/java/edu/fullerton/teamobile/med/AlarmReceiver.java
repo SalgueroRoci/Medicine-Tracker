@@ -57,10 +57,10 @@ public class AlarmReceiver extends BroadcastReceiver {
         Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
 
         //Intent for Snooze button
-        Intent btnSN = new Intent(context, AlarmReceiver.class);
+        Intent btnSN = new Intent(context, SnoozePage.class);
         btnSN.putExtra("intentID", "0");
         btnSN.putExtra("medName", medName );
-        PendingIntent btnSnooze = PendingIntent.getBroadcast(context, 0, btnSN, PendingIntent.FLAG_UPDATE_CURRENT);
+        PendingIntent btnSnooze = PendingIntent.getActivity(context, 0, btnSN, 0);
 
         Intent btnTook = new Intent(context, AlarmReceiver.class);
         btnTook.putExtra("intentID", "3");
@@ -102,32 +102,6 @@ public class AlarmReceiver extends BroadcastReceiver {
         mNotifyMgr.notify(1, notific);
         //mNotifyMgr.notify(1, notif.build());
 
-
-
-        //if snooze button pressed then create new snooze alarm in 5 minutes
-        if(id == 0) {//mine... need to change this to open a popup with 3 buttons: 5, 10, 15 minutes
-            Log.e("onReceive", "Snooze");
-            mNotifyMgr.cancel(1);
-
-            //cancel notification and let set in five minutes
-            //NotificationManager mNM = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            //mNM.cancel(1);
-
-
-
-            Intent actualSnooze = new Intent(context, AlarmReceiver.class);
-            actualSnooze.putExtra("intentID", "2");
-            actualSnooze.putExtra("medName", medName );
-            PendingIntent snooze = PendingIntent.getBroadcast(context, 2, actualSnooze, PendingIntent.FLAG_UPDATE_CURRENT);
-            //Snooze created for 5 minutes
-            Calendar alarmCalendar = Calendar.getInstance();
-
-            long currenttime = alarmCalendar.getTimeInMillis() + 300000; //5 minutes
-            AlarmManager am = (AlarmManager) context.getSystemService((ALARM_SERVICE) );
-            am.set(AlarmManager.RTC_WAKEUP, currenttime, snooze);
-
-
-        }
 
         if(id == 3) {
             //decrement the amount of medication left by 1.
