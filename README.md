@@ -17,8 +17,8 @@ Group Members and Emails: </br>
 	Medicine Tracker (tm) is a mobile application for the Android phones that helps keep track of medications a user has. </br>
 	The app uses online connection to connect to the database to store, and retrieve information. The alarm is set locally on the phone. Since our application is hosted on a free website hosting app, our website goes down at 11pm PST for about 1 hour a day. It may vary on different times if the website host changes it because of overload on their servers. </br>
 	
-	Our program is on github: https://github.com/SalgueroRoci/Med</br>
-	Our website is: https://medicinetracker.000webhostapp.com/</br>
+	Our program is on github: https://github.com/SalgueroRoci/Med </br>
+	Our website is: https://medicinetracker.000webhostapp.com/ </br>
 	
 	Website source files are under the 'website' folder. The database used on the website is in the '/website/database' folder. 
 	The createtables.sql is the structure of our database and currentdata.sql is the current data in the database as of 12/03/17.
