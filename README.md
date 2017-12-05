@@ -1,7 +1,7 @@
 # Medicine Tracker 
 # Group Name: Tea Mobile 
 
-Group Email: teamobilecorp@gmail.com
+Group Email: teamobilecorp@gmail.com </br>
 Group Members and Emails: </br>
 	Rocio Salguero   Email: salgueroroci@csu.fullerton.edu </br>
 	Austin Draper    Email: austindraper@csu.fullerton.edu </br>
