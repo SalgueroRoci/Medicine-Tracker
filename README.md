@@ -2,7 +2,7 @@
 # Group Name: Tea Mobile 
 
 Group Email: teamobilecorp@gmail.com
-Group Members and Emails: 
+Group Members and Emails: </br>
 	Rocio Salguero   Email: salgueroroci@csu.fullerton.edu </br>
 	Austin Draper    Email: austindraper@csu.fullerton.edu </br>
 	Vanessa Delfin   Email: vmdelfin@csu.fullerton.edu  </br>
