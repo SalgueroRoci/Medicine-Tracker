@@ -25,7 +25,7 @@ The createtables.sql is the structure of our database and currentdata.sql is the
 All other android source files are under the Med project file including xml and java files. (Med/app/src/main/java/edu/fullerton/teamobile/med/) </br>
 
 ### To run Mobile Application: </br>
-##### First way: Running APK </br>
+#### First way: Running APK </br>
 	https://android.gadgethacks.com/how-to/android-basics-enable-unknown-sources-sideload-apps-0161947/
 	First you have to allow unknown sources to run on your phone by changing settings:
 		Navigate to Setting > Security.
@@ -36,7 +36,7 @@ All other android source files are under the Med project file including xml and 
 	On success, browse your applications and look for 'Medicine Tracker'. 
 	Application is ready to use. </br>
 			
-##### Second way: Running/Debugging from Android Studio 
+#### Second way: Running/Debugging from Android Studio 
 	Download and install Android Studio with Android sdk </br>
 	https://developer.android.com/studio/install.html </br>
 	Go to github https://github.com/SalgueroRoci/Med </br>
