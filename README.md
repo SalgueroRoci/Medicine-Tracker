@@ -1,5 +1,5 @@
 # Medicine Tracker 
-# Group Name: Tea Mobile 
+# Group Name: Tea Mobile
 
 Group Email: teamobilecorp@gmail.com </br>
 Group Members and Emails: </br>
@@ -9,7 +9,7 @@ Group Members and Emails: </br>
 	Matthew McCauley Email: mmccauley@csu.fullerton.edu </br>
 	Yu Kou           Email: yuki.coco7@gmail.com </br>
 	
-# Environments used: 
+## Environments used: 
 	Android Studio API Level 19 
 	000webhost.com
 
