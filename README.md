@@ -13,7 +13,7 @@ Group Members and Emails: </br>
 	Android Studio API Level 19 
 	000webhost.com
 
-# Program: 
+## Program: 
 Medicine Tracker (tm) is a mobile application for the Android phones that helps keep track of medications a user has. </br>
 The app uses online connection to connect to the database to store, and retrieve information. The alarm is set locally on the phone. Since our application is hosted on a free website hosting app, our website goes down at 11pm PST for about 1 hour a day. It may vary on different times if the website host changes it because of overload on their servers. </br>
 	
