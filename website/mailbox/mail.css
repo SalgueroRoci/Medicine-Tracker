@@ -1,0 +1,49 @@
+.mailbox  {
+	border-collapse: collapse;
+	padding: 0; margin:10px 0 10px 0; 
+	border-radius: 5px;
+	background-color: #e1ebee; 
+	min-width: 300px; 
+	width: 100%;
+}
+.mailbox  td:nth-child(1), .mailbox th:nth-child(1) {
+	width: 10%; 
+	max-width: 10px; 
+}
+.mailbox  td:nth-child(2), .mailbox th:nth-child(2), .mailbox  td:nth-child(4), .mailbox th:nth-child(4) {
+	width: 20%; 
+}
+.mailbox  td:nth-child(3), .mailbox th:nth-child(3) {
+	width: 50%; 
+}
+.mailbox   th, td { 
+   border-bottom: 1px solid #232323;
+   padding: 5px; 
+}
+.mailbox   tr:hover { 	
+	background-color: #3e4959; 
+	color: white; 
+}
+tr.Read{
+	font-weight: lighter;
+}
+tr.Unread { 	
+	font-weight: bolder;
+}
+tr.Read .glyphicon-envelope, tr.Sent .glyphicon-envelope, tr.Trash .glyphicon-envelope {
+	color: #b1cfd8; 
+}
+tr.Unread .glyphicon-envelope {
+	color: black; 
+}
+.clickmail:hover {
+  cursor: pointer;
+}
+.compose, .readmail{
+	padding: 10px; margin:10px 0 10px 0; 
+	border-radius: 5px;
+	background-color: #e1ebee; 
+	min-width: 300px; 
+	width: 100%;
+	overflow: auto;
+}
